@@ -142,11 +142,11 @@ const msgH=(m,i)=>`<div class="msg ${m.role}" data-i="${i}">${m.role==="user"?es
 async function send(text){if(busy||!text.trim())return;let c=S.convs.find(x=>x.id===cur);
 if(!c){c={id:uid(),title:text.trim().slice(0,40),ts:Date.now(),msgs:[]};S.convs.unshift(c);cur=c.id}
 c.msgs.push({role:"user",content:text.trim()});await reply(c)}
-async function reply(c){busy=true;ctrl=new AbortController();c.msgs.push({role:"assistant",content:""});view="chat";render();
+async function reply(c){busy=true;ctrl=new AbortController();c.msgs.push({role:"assistant",content:""});view="chat";render();$("#body").scrollTop=$("#body").scrollHeight;
 const sb=$("#sendb");sb.textContent="Stop";sb.dataset.act="stop";const hist=c.msgs.slice(0,-1).slice(-9);const last=c.msgs[c.msgs.length-1];
-try{const r=await ask(hist,SYS,({text})=>{last.content=text;const n=$("#msgs").lastElementChild;if(n)n.innerHTML=md(text)},ctrl.signal,lim(hist[hist.length-1].content));last.content=(r&&r.text)||last.content}
+try{const r=await ask(hist,SYS,({text})=>{last.content=text;const n=$("#msgs").lastElementChild;if(n){n.innerHTML=md(text);$("#body").scrollTop=$("#body").scrollHeight}},ctrl.signal,lim(hist[hist.length-1].content));last.content=(r&&r.text)||last.content}
 catch(e){if(e&&e.code==="aborted"||ctrl.signal.aborted){}else{$("#cerr")&&($("#cerr").innerHTML=`<div class="err">${errMsg(e)}</div>`);if(!last.content)c.msgs.pop()}}
-if(!last.content&&c.msgs[c.msgs.length-1]===last)c.msgs.pop();busy=false;c.ts=Date.now();save();const err=$("#cerr")?$("#cerr").innerHTML:"";side();const m=$("#msgs");if(m){m.innerHTML=c.msgs.map(msgH).join("");$("#cerr").innerHTML=err;const b=$("#sendb");b.textContent="Send";b.dataset.act="send"}}
+if(!last.content&&c.msgs[c.msgs.length-1]===last)c.msgs.pop();busy=false;c.ts=Date.now();save();const err=$("#cerr")?$("#cerr").innerHTML:"";side();const m=$("#msgs");if(m){m.innerHTML=c.msgs.map(msgH).join("");$("#cerr").innerHTML=err;$("#body").scrollTop=$("#body").scrollHeight;const b=$("#sendb");b.textContent="Send";b.dataset.act="send"}}
 function tool(el){const T=TOOLS[view];if(!T){return home(el)}const sel=task[view]=task[view]||T.o[0];
 el.innerHTML=`<h2>${T.t}</h2><div class="mu">${T.s}</div>${T.note?`<div class="note">${T.note}</div>`:""}
 <div class="chips">${T.o.map(o=>`<button class="chip ${o===sel?"on":""}" data-task="${esc(o)}">${esc(o)}</button>`).join("")}</div>
@@ -169,6 +169,7 @@ function settings(el){el.innerHTML=`<h2>Settings</h2><h4>Appearance</h4><div cla
 <h4>Profile</h4><input id="nm" value="${esc(S.name)}" placeholder="Your name (optional)" aria-label="Your name"><button data-act="svn" style="margin-top:8px">Save name</button>
 <h4>Privacy</h4><div class="note">There are no accounts. Chats, tasks, notes and saved items stay in this browser only. NOVA has no memory between chats beyond the conversation you’re in. AI requests are sent to the AI provider (NOVA’s shared Gemini, or your own key).</div>
 <h4>AI connection</h4><div class="chips"><button class="chip ${S.prov==="gemini"?"on":""}" data-prov="gemini">Gemini (free key)</button><button class="chip ${S.prov!=="gemini"?"on":""}" data-prov="anthropic">Anthropic</button></div><div class="note">NOVA’s AI works without a key. Optional: paste your own API key to use your own limits. Get a free Gemini key at aistudio.google.com, or an Anthropic key at console.anthropic.com. Your key stays in this browser and is sent only to that provider. Never share your key.</div><input id="ky" type="password" value="${esc(S.key||"")}" placeholder="${S.prov==="gemini"?"AIza…":"sk-ant-…"}" aria-label="API key"><button data-act="svk" style="margin:8px 8px 0 0">Save key</button><button data-act="chk">Check AI</button> <span id="aist" class="mu"></span>
+<h4>Share NOVA</h4><div class="note">Send this app to a friend. Tip: in Chrome tap ⋮ → Add to Home screen to open NOVA like an app.</div><button data-act="shr">Copy NOVA link</button>
 <h4>Data</h4><button data-act="wipe" style="border-color:#f87171">Delete all my data</button>
 <h4>About NOVA</h4><div class="card"><div class="brand"><svg style="width:36px;height:36px"><use href="#logo"/></svg><div>NOVA<small>Created by MUSTAFA</small></div></div><p style="margin-top:10px"><i>“One Intelligence. Endless Possibilities.”</i></p></div>`}
 document.addEventListener("click",async e=>{const t=e.target.closest("button,.nav"),d=t&&t.dataset;if(!t)return;
@@ -201,6 +202,7 @@ case"addn":{const i=$("#nn");if(i.value.trim()){S.notes.unshift({id:uid(),x:i.va
 case"svn":S.name=$("#nm").value.trim().slice(0,40);save();t.textContent="Saved ✓";break;
 case"svk":S.key=$("#ky").value.trim();save();t.textContent="Saved ✓";break;
 case"chk":{const s=$("#aist");s.textContent="Testing…";try{await ask([{role:"user",content:"Reply with OK"}],"Reply with one word.",()=>{},undefined,["Reply with one word.",20]);s.textContent=S.key?"Key works ✓":"Shared NOVA AI works ✓"}catch(x){s.textContent=errMsg(x).replace(/<[^>]*>/g,"")}break}
+case"shr":copy(location.origin+location.pathname);t.textContent="Link copied ✓";break;
 case"wipe":if(confirm("Delete all chats, tasks, notes and saved items from this browser? This can’t be undone.")){S={convs:[],tasks:[],notes:[],saved:[],theme:S.theme,name:""};cur=null;save();render()}break}});
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&e.target.id==="ci"&&matchMedia("(hover:hover)").matches){e.preventDefault();const v=e.target.value;e.target.value="";send(v)}
 if(e.key==="Enter"&&e.target.id==="nt")$("#nt").nextElementSibling.click()});
