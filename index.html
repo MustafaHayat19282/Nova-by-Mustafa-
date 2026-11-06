@@ -1,16 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark"><head><meta charset="utf-8">
+<html lang="en" data-theme="dark" data-pal="emerald"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NOVA by MUSTAFA</title>
 <style>
-:root{--bg:#080B14;--bg2:#101729;--tx:#F8FAFC;--mu:#94A3B8;--v:#8B5CF6;--b:#38BDF8;--bd:rgba(148,163,184,.16);--r:14px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-:root[data-theme=light]{--bg:#F8FAFC;--bg2:#fff;--tx:#0f172a;--mu:#475569;--bd:rgba(15,23,42,.13)}
+:root{--bg:#0A1410;--bg2:#111F18;--tx:#F4EFE3;--mu:#9FAAA2;--v:#C9A24B;--b:#E9D9A6;--ar:201,162,75;--on:#1A1408;--bd:rgba(233,217,166,.16);--r:14px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-pal=navy]{--bg:#0A1020;--bg2:#111B33;--tx:#F5F1E8;--mu:#9AA5BA;--v:#C8A95E;--b:#E6D5A1;--ar:200,169,94;--on:#1A1408;--bd:rgba(230,213,161,.16)}
+:root[data-pal=burgundy]{--bg:#140A0D;--bg2:#211118;--tx:#F6EEE6;--mu:#B3A0A3;--v:#A3344A;--b:#D9A66B;--ar:163,52,74;--on:#fff;--bd:rgba(217,166,107,.18)}
+:root[data-pal=purple]{--bg:#080B14;--bg2:#101729;--tx:#F8FAFC;--mu:#94A3B8;--v:#8B5CF6;--b:#38BDF8;--ar:139,92,246;--on:#fff;--bd:rgba(148,163,184,.16)}
+:root[data-theme=light]{--bg:#F7F3EA;--bg2:#FFFDF8;--tx:#1C2420;--mu:#5B6560;--bd:rgba(28,36,32,.14)}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--tx);font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer;background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:8px 14px}
 button:hover{border-color:var(--v)}button:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--b);outline-offset:2px}
-.pri{background:linear-gradient(135deg,var(--v),var(--b));border:0;color:#fff;font-weight:600}
+.pri{background:linear-gradient(135deg,var(--v),var(--b));border:0;color:var(--on);font-weight:600}
 .pri:disabled{opacity:.5;cursor:default}
 textarea,input,select{width:100%;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px}
 textarea{resize:vertical;min-height:90px}
@@ -21,7 +24,7 @@ textarea{resize:vertical;min-height:90px}
 /* landing */
 .wrap{max-width:1000px;margin:0 auto;padding:18px 20px}
 .top{display:flex;justify-content:space-between;align-items:center}
-.hero{text-align:center;padding:56px 0 30px;background:radial-gradient(500px 260px at 50% 0,rgba(139,92,246,.22),transparent)}
+.hero{text-align:center;padding:56px 0 30px;background:radial-gradient(500px 260px at 50% 0,rgba(var(--ar),.22),transparent)}
 .hero h1{font-size:clamp(30px,6vw,52px);line-height:1.1;margin:0 0 14px}
 .hero p{max-width:600px;margin:0 auto 24px;color:var(--mu)}
 .hero .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.hero button{padding:12px 22px}
@@ -29,7 +32,7 @@ textarea{resize:vertical;min-height:90px}
 .prev .sb{width:28%;border-right:1px solid var(--bd);padding:12px;font-size:12px;color:var(--mu)}
 .prev .mn{flex:1;padding:14px;font-size:13px}
 .bub{border-radius:12px;padding:8px 12px;margin:8px 0;max-width:85%}
-.bub.u{background:rgba(139,92,246,.22);margin-left:auto}.bub.a{background:var(--bg);border:1px solid var(--bd)}
+.bub.u{background:rgba(var(--ar),.22);margin-left:auto}.bub.a{background:var(--bg);border:1px solid var(--bd)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
 .card{border:1px solid var(--bd);background:var(--bg2);border-radius:var(--r);padding:16px}
 .card h3{margin:0 0 4px;font-size:15px}.card p{margin:0;color:var(--mu);font-size:13px}
@@ -38,30 +41,31 @@ footer{text-align:center;color:var(--mu);font-size:13px;padding:40px 0 24px}
 #app{display:flex;height:100%}
 .side{width:236px;background:var(--bg2);border-right:1px solid var(--bd);padding:14px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;transition:transform .2s}
 .nav{display:flex;gap:10px;width:100%;text-align:left;background:none;border:0;padding:9px 10px}
-.nav.on{background:rgba(139,92,246,.18)}.nav span:first-child{width:18px;text-align:center;color:var(--b)}
+.nav.on{background:rgba(var(--ar),.18)}.nav span:first-child{width:18px;text-align:center;color:var(--b)}
 .main{flex:1;min-width:0;display:flex;flex-direction:column;height:100%}
 .bar{display:none;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--bd)}
 .body{flex:1;overflow-y:auto;padding:22px 22px 30px}.inner{max-width:780px;margin:0 auto}
 h2{margin:0 0 6px;font-size:24px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.chip{border-radius:99px;padding:6px 13px;font-size:13px}.chip.on{background:rgba(139,92,246,.25);border-color:var(--v)}
+.chip{border-radius:99px;padding:6px 13px;font-size:13px}.chip.on{background:rgba(var(--ar),.25);border-color:var(--v)}
 .row{display:flex;gap:8px;align-items:flex-end}
 .msg{margin:14px 0;padding:12px 16px;border-radius:var(--r);overflow-wrap:anywhere}
-.msg.user{background:rgba(139,92,246,.2);margin-left:12%}.msg.assistant{background:var(--bg2);border:1px solid var(--bd)}
+.msg.user{background:rgba(var(--ar),.2);margin-left:12%}.msg.assistant{background:var(--bg2);border:1px solid var(--bd)}
 .acts{display:flex;gap:6px;margin-top:8px}.acts button{padding:3px 10px;font-size:12px}
 .out{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;margin-top:14px;overflow-wrap:anywhere}
-pre{position:relative;background:#0b1020;color:#e2e8f0;border-radius:10px;padding:14px;overflow-x:auto;font-size:13px}
+pre{position:relative;background:#080e0b;color:#e2e8f0;border-radius:10px;padding:14px;overflow-x:auto;font-size:13px}
 .cp{position:absolute;top:6px;right:6px;padding:2px 8px;font-size:11px}
 code{font-family:ui-monospace,Menlo,monospace}p{margin:.5em 0}
 .err{border:1px solid #f87171;color:#fca5a5;border-radius:var(--r);padding:12px 14px;margin-top:12px}
 .note{border:1px dashed var(--bd);color:var(--mu);border-radius:var(--r);padding:10px 14px;font-size:13px;margin:10px 0}
 .item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}.item .t{flex:1}.done{text-decoration:line-through;color:var(--mu)}
 .dots span{display:inline-block;width:6px;height:6px;margin-right:4px;border-radius:50%;background:var(--v);animation:p 1s infinite}.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
-@keyframes p{50%{opacity:.2}}
+@keyframes p{50%{opacity:.2}}@keyframes fd{from{opacity:0;transform:translateY(6px)}}
+.msg{animation:fd .25s ease}.mic{padding:8px 12px;font-size:16px;line-height:1}.mic.on{background:var(--v);color:var(--on);border-color:var(--v);animation:p 1s infinite}
 @media(max-width:760px){.side{position:fixed;z-index:9;top:0;bottom:0;left:0;transform:translateX(-100%);padding-top:calc(14px + env(safe-area-inset-top,0px))}.side.open{transform:none}.bar{display:flex}.msg.user{margin-left:4%}.body{padding:16px}.prev .sb{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#38BDF8"/></linearGradient></defs>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--v)"/><stop offset="1" style="stop-color:var(--b)"/></linearGradient></defs>
 <symbol id="logo" viewBox="0 0 64 64"><path d="M32 3C34 22 42 30 61 32C42 34 34 42 32 61C30 42 22 34 3 32C22 30 30 22 32 3Z" fill="url(#lgg)"/><circle cx="32" cy="32" r="5" fill="var(--bg)"/><circle cx="32" cy="32" r="2" fill="#F8FAFC"/></symbol></svg>
 
 <div id="land">
@@ -122,23 +126,35 @@ return sm(msgs.map((x,i)=>({role:x.role,content:i?x.content:sys+"\n\n"+x.content
 function errMsg(e){if(e&&e.code==="none"||e&&e.code==="not_granted")return"NOVA needs an AI connection. Open Settings → AI connection and paste an API key. Until then NOVA won’t make up answers.";
 if(e&&e.code==="rate_limited")return"Too many requests right now. Please wait a moment and try again.";return"Something went wrong: "+esc((e&&e.message)||"request failed")+". Please try again."}
 const copy=t=>{try{navigator.clipboard.writeText(t)}catch(e){}};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition,TTS="speechSynthesis" in window;
+let rec=null,recOn=false;
+const micBtn=id=>SR?`<button class="mic" data-mic="${id}" aria-label="Speak instead of typing">🎙</button>`:"";
+function stopVoice(){try{if(rec&&recOn)rec.stop()}catch(e){}try{if(TTS)speechSynthesis.cancel()}catch(e){}}
+function mic(id,btn){if(!SR)return;if(recOn&&rec){rec.stop();return}
+const ta=$("#"+id);if(!ta)return;const base=ta.value?ta.value+" ":"";rec=new SR();rec.lang=navigator.language||"en-US";rec.interimResults=true;rec.continuous=false;
+const off=()=>{recOn=false;btn.classList.remove("on");btn.textContent="🎙"};
+rec.onresult=e=>{let t="";for(const r of e.results)t+=r[0].transcript;ta.value=base+t};
+rec.onend=off;rec.onerror=e=>{off();if(e.error==="not-allowed"||e.error==="service-not-allowed")alert("The microphone is blocked. Allow the microphone for this site in your browser settings.")};
+try{rec.start();recOn=true;btn.classList.add("on");btn.textContent="⏹"}catch(x){off()}}
+function speak(text,btn){if(!TTS)return;if(speechSynthesis.speaking){speechSynthesis.cancel();btn.textContent="🔊 Listen";return}
+const u=new SpeechSynthesisUtterance(String(text).replace(/[`*#>_]/g,""));u.lang=navigator.language||"en-US";u.onend=u.onerror=()=>{btn.textContent="🔊 Listen"};btn.textContent="⏹ Stop";speechSynthesis.speak(u)}
 function side(){$("#side").innerHTML=`<div class="brand" style="padding:6px 8px 14px"><svg><use href="#logo"/></svg><div>NOVA<small>by MUSTAFA</small></div></div>
 <button class="pri" data-act="newchat" style="margin-bottom:8px">＋ New Chat</button>`+NAV.map(n=>`<button class="nav ${view===n[0]?"on":""}" data-go="${n[0]}"><span>${n[1]}</span><span>${n[2]}</span></button>`).join("")+
 `<div class="mu" style="font-size:12px;margin:14px 8px 4px">Recent</div>`+S.convs.slice(0,6).map(c=>`<button class="nav" data-conv="${c.id}"><span></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.title)}</span></button>`).join("")}
-function go(v){view=v;$("#side").classList.remove("open");render()}
+function go(v){stopVoice();view=v;$("#side").classList.remove("open");render()}
 function render(){side();const el=$("#inner");({home,chat,tasks,saved,settings}[view]||tool)(el);$("#body").scrollTop=0}
-function home(el){const sug=["Explain quantum computing simply","Plan a productive week","Write a friendly follow-up email","Help me learn Spanish basics"];
-el.innerHTML=`<div style="text-align:center;padding:10px 0 18px"><svg style="width:54px;height:54px"><use href="#logo"/></svg><h2>${S.name?"Good to see you, "+esc(S.name)+".":"Good to see you."}</h2><div class="mu">What can we explore today?</div></div>
-<div class="row"><textarea id="hq" rows="2" style="min-height:56px" placeholder="Ask NOVA anything…" aria-label="Ask NOVA anything"></textarea><button class="pri" data-act="hask">Ask</button></div>
+function home(el){const hr=new Date().getHours(),gr=hr<5?"Good night":hr<12?"Good morning":hr<18?"Good afternoon":"Good evening";const sug=["Explain quantum computing simply","Plan a productive week","Write a friendly follow-up email","Help me learn Spanish basics"];
+el.innerHTML=`<div style="text-align:center;padding:10px 0 18px"><svg style="width:54px;height:54px"><use href="#logo"/></svg><h2>${gr+(S.name?", "+esc(S.name):"")+"."}</h2><div class="mu">What can we explore today?</div></div>
+<div class="row"><textarea id="hq" rows="2" style="min-height:56px" placeholder="Ask NOVA anything…" aria-label="Ask NOVA anything"></textarea>${micBtn("hq")}<button class="pri" data-act="hask">Ask</button></div>
 <div class="grid" style="margin:18px 0">${[["chat","AI Chat"],["write","Write Anything"],["research","Research"],["create","Creative Studio"],["study","Study Assistant"],["tasks","Productivity"],["code","Coding Assistant"],["tasks","My Workspace"]].map(x=>`<button data-go="${x[0]}">${x[1]}</button>`).join("")}</div>
 <h4>Suggested prompts</h4><div class="chips">${sug.map(p=>`<button class="chip" data-sug="${esc(p)}">${esc(p)}</button>`).join("")}</div>
 <h4>Recent conversations</h4>${S.convs.slice(0,4).map(c=>`<button class="nav" data-conv="${c.id}" style="border:1px solid var(--bd);margin-bottom:6px"><span></span><span>${esc(c.title)}</span></button>`).join("")||'<div class="mu">No conversations yet.</div>'}`}
 function chat(el){const c=S.convs.find(x=>x.id===cur);
 el.innerHTML=`<div class="row" style="justify-content:space-between;align-items:center"><h2 style="flex:1;overflow:hidden;text-overflow:ellipsis">${c?esc(c.title):"AI Chat"}</h2>${c?`<button data-act="ren">Rename</button><button data-act="del">Delete</button>`:""}</div>
-${c?`<div class="mu" style="font-size:12px">${new Date(c.ts).toLocaleString()}</div>`:`<div class="note">Start a conversation below. Your chats are saved in this browser.</div>`}
+${c?`<div class="mu" style="font-size:12px">${new Date(c.ts).toLocaleString()}</div>`:`<div class="note">Start a conversation below. Your chats are saved in this browser.</div><div class="chips">${["Explain something simply","Help me write an email","Make me a study plan"].map(p=>`<button class="chip" data-sug="${esc(p)}">${esc(p)}</button>`).join("")}</div>`}
 <div id="msgs">${c?c.msgs.map(msgH).join(""):""}</div><div id="cerr"></div>
-<div class="row" style="position:sticky;bottom:0;background:var(--bg);padding:10px 0"><textarea id="ci" rows="2" style="min-height:52px" placeholder="Message NOVA…" aria-label="Message"></textarea><button class="pri" id="sendb" data-act="send">Send</button></div>`}
-const msgH=(m,i)=>`<div class="msg ${m.role}" data-i="${i}">${m.role==="user"?esc(m.content).replace(/\n/g,"<br>"):(m.content?md(m.content):'<span class="dots"><span></span><span></span><span></span></span>')}${m.role==="assistant"&&m.content?`<div class="acts"><button data-act="cpm">Copy</button><button data-act="regen">Regenerate</button></div>`:""}</div>`;
+<div class="row" style="position:sticky;bottom:0;background:var(--bg);padding:10px 0"><textarea id="ci" rows="2" style="min-height:52px" placeholder="Message NOVA…" aria-label="Message"></textarea>${micBtn("ci")}<button class="pri" id="sendb" data-act="send">Send</button></div>`}
+const msgH=(m,i)=>`<div class="msg ${m.role}" data-i="${i}">${m.role==="user"?esc(m.content).replace(/\n/g,"<br>"):(m.content?md(m.content):'<span class="dots"><span></span><span></span><span></span></span>')}${m.role==="assistant"&&m.content?`<div class="acts"><button data-act="cpm">Copy</button><button data-act="regen">Regenerate</button>${TTS?`<button data-act="say">🔊 Listen</button>`:""}</div>`:""}</div>`;
 async function send(text){if(busy||!text.trim())return;let c=S.convs.find(x=>x.id===cur);
 if(!c){c={id:uid(),title:text.trim().slice(0,40),ts:Date.now(),msgs:[]};S.convs.unshift(c);cur=c.id}
 c.msgs.push({role:"user",content:text.trim()});await reply(c)}
@@ -151,8 +167,8 @@ function tool(el){const T=TOOLS[view];if(!T){return home(el)}const sel=task[view
 el.innerHTML=`<h2>${T.t}</h2><div class="mu">${T.s}</div>${T.note?`<div class="note">${T.note}</div>`:""}
 <div class="chips">${T.o.map(o=>`<button class="chip ${o===sel?"on":""}" data-task="${esc(o)}">${esc(o)}</button>`).join("")}</div>
 <textarea id="ti" rows="6" placeholder="${T.ph}" aria-label="Input"></textarea>
-<div class="row" style="margin-top:10px"><button class="pri" id="gen" data-act="gen">Generate</button><button data-act="clr">Clear</button></div><div id="tout">${outs[view]?outH(outs[view]):""}</div>`}
-const outH=t=>`<div class="out"><div id="otxt">${md(t)}</div><div class="acts"><button data-act="cpo">Copy</button><button data-act="sv">Save</button></div></div>`;
+<div class="row" style="margin-top:10px"><button class="pri" id="gen" data-act="gen">Generate</button><button data-act="clr">Clear</button>${micBtn("ti")}</div><div id="tout">${outs[view]?outH(outs[view]):""}</div>`}
+const outH=t=>`<div class="out"><div id="otxt">${md(t)}</div><div class="acts"><button data-act="cpo">Copy</button><button data-act="sv">Save</button>${TTS?`<button data-act="say">🔊 Listen</button>`:""}</div></div>`;
 async function gen(){const inp=$("#ti").value.trim();if(!inp||busy)return;busy=true;ctrl=new AbortController();const v=view,b=$("#gen");b.textContent="Stop";b.dataset.act="stop";
 $("#tout").innerHTML=`<div class="out"><span class="dots"><span></span><span></span><span></span></span></div>`;let txt="";
 const p=`Task: ${task[v]}. Area: ${TOOLS[v].t}.${v==="research"?" Give headings, a short summary and key findings. Clearly separate well-established facts from uncertain points. Do not cite sources.":""}\n\nInput:\n${inp}`;
@@ -166,6 +182,7 @@ ${S.tasks.map(t=>`<div class="item"><input type="checkbox" style="width:auto" ${
 ${S.notes.map(n=>`<div class="item"><span class="t">${esc(n.x).replace(/\n/g,"<br>")}</span><button data-en="${n.id}">Edit</button><button data-dn="${n.id}">✕</button></div>`).join("")}`}
 function saved(el){el.innerHTML=`<h2>Saved Items</h2>${S.saved.map(s=>`<div class="out"><div class="mu" style="font-size:12px">${esc(s.k)} · ${new Date(s.ts).toLocaleDateString()}</div>${md(s.x)}<div class="acts"><button data-cps="${s.id}">Copy</button><button data-ds="${s.id}">Delete</button></div></div>`).join("")||'<div class="note">Nothing saved yet. Use Save on any result.</div>'}`}
 function settings(el){el.innerHTML=`<h2>Settings</h2><h4>Appearance</h4><div class="chips"><button class="chip ${S.theme==="dark"?"on":""}" data-th="dark">Dark</button><button class="chip ${S.theme==="light"?"on":""}" data-th="light">Light</button></div>
+<div class="chips">${[["emerald","Emerald and Gold"],["navy","Navy and Gold"],["burgundy","Burgundy"],["purple","Classic Purple"]].map(p=>`<button class="chip ${(S.pal||"emerald")===p[0]?"on":""}" data-pal="${p[0]}">${p[1]}</button>`).join("")}</div>
 <h4>Profile</h4><input id="nm" value="${esc(S.name)}" placeholder="Your name (optional)" aria-label="Your name"><button data-act="svn" style="margin-top:8px">Save name</button>
 <h4>Privacy</h4><div class="note">There are no accounts. Chats, tasks, notes and saved items stay in this browser only. NOVA has no memory between chats beyond the conversation you’re in. AI requests are sent to the AI provider (NOVA’s shared Gemini, or your own key).</div>
 <h4>AI connection</h4><div class="chips"><button class="chip ${S.prov==="gemini"?"on":""}" data-prov="gemini">Gemini (free key)</button><button class="chip ${S.prov!=="gemini"?"on":""}" data-prov="anthropic">Anthropic</button></div><div class="note">NOVA’s AI works without a key. Optional: paste your own API key to use your own limits. Get a free Gemini key at aistudio.google.com, or an Anthropic key at console.anthropic.com. Your key stays in this browser and is sent only to that provider. Never share your key.</div><input id="ky" type="password" value="${esc(S.key||"")}" placeholder="${S.prov==="gemini"?"AIza…":"sk-ant-…"}" aria-label="API key"><button data-act="svk" style="margin:8px 8px 0 0">Save key</button><button data-act="chk">Check AI</button> <span id="aist" class="mu"></span>
@@ -173,7 +190,7 @@ function settings(el){el.innerHTML=`<h2>Settings</h2><h4>Appearance</h4><div cla
 <h4>Data</h4><button data-act="wipe" style="border-color:#f87171">Delete all my data</button>
 <h4>About NOVA</h4><div class="card"><div class="brand"><svg style="width:36px;height:36px"><use href="#logo"/></svg><div>NOVA<small>Created by MUSTAFA</small></div></div><p style="margin-top:10px"><i>“One Intelligence. Endless Possibilities.”</i></p></div>`}
 document.addEventListener("click",async e=>{const t=e.target.closest("button,.nav"),d=t&&t.dataset;if(!t)return;
-if(d.prov){S.prov=d.prov;save();return settings($("#inner"))}if(d.go)return go(d.go);if(d.conv){cur=d.conv;return go("chat")}
+if(d.mic){mic(d.mic,t);return}if(d.pal){S.pal=d.pal;document.documentElement.dataset.pal=d.pal;save();return settings($("#inner"))}if(d.prov){S.prov=d.prov;save();return settings($("#inner"))}if(d.go)return go(d.go);if(d.conv){cur=d.conv;return go("chat")}
 if(d.sug){await send(d.sug);return}if(d.task){task[view]=d.task;return tool($("#inner"))}
 if(d.th){S.theme=d.th;document.documentElement.dataset.theme=d.th;save();return settings($("#inner"))}
 if(d.tg){const x=S.tasks.find(i=>i.id===d.tg);x.d=!x.d;save();return tasks($("#inner"))}
@@ -196,6 +213,7 @@ case"ren":{const c=S.convs.find(x=>x.id===cur),v=prompt("Rename conversation",c.
 case"del":if(confirm("Delete this conversation?")){S.convs=S.convs.filter(x=>x.id!==cur);cur=null;save();go("chat")}break;
 case"gen":gen();break;case"clr":$("#ti").value="";outs[view]="";$("#tout").innerHTML="";break;
 case"cpo":copy(outs[view]);break;
+case"say":{const m=t.closest(".msg");speak(m?S.convs.find(x=>x.id===cur).msgs[+m.dataset.i].content:outs[view],t);break}
 case"sv":S.saved.unshift({id:uid(),k:TOOLS[view].t+" · "+task[view],x:outs[view],ts:Date.now()});save();t.textContent="Saved ✓";break;
 case"addt":{const i=$("#nt");if(i.value.trim()){S.tasks.unshift({id:uid(),x:i.value.trim(),d:false});save();tasks($("#inner"))}break}
 case"addn":{const i=$("#nn");if(i.value.trim()){S.notes.unshift({id:uid(),x:i.value.trim()});save();tasks($("#inner"))}break}
@@ -207,5 +225,5 @@ case"wipe":if(confirm("Delete all chats, tasks, notes and saved items from this 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&e.target.id==="ci"&&matchMedia("(hover:hover)").matches){e.preventDefault();const v=e.target.value;e.target.value="";send(v)}
 if(e.key==="Enter"&&e.target.id==="nt")$("#nt").nextElementSibling.click()});
 function route(){const a=location.hash==="#app";$("#land").classList.toggle("hide",a);$("#app").classList.toggle("hide",!a);if(a)render()}
-document.documentElement.dataset.theme=S.theme;addEventListener("hashchange",route);route();
+document.documentElement.dataset.theme=S.theme;document.documentElement.dataset.pal=S.pal||"emerald";addEventListener("hashchange",route);route();
 </script></body></html>
