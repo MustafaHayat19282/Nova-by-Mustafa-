@@ -145,4 +145,119 @@ try{rec.start();recOn=true;btn.classList.add("on");btn.textContent="⏹"}catch(x
 function speak(text,btn){if(!TTS)return;if(speechSynthesis.speaking){speechSynthesis.cancel();btn.textContent="🔊 Listen";return}
 const u=new SpeechSynthesisUtterance(String(text).replace(/[`*#>_]/g,""));u.lang=navigator.language||"en-US";u.onend=u.onerror=()=>{btn.textContent="🔊 Listen"};btn.textContent="⏹ Stop";speechSynthesis.speak(u)}
 function shrink(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{const k=Math.min(1,1024/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok({mime:"image/jpeg",data:c.toDataURL("image/jpeg",.82).split(",")[1]})};im.onerror=()=>no(new Error("Could not read that image"));im.src=u})}
-function imgGrid(){const I=imgState;return`<div class="note" style="margin-top:12px"><b>Pr
+function imgGrid(){const I=imgState;return`<div class="note" style="margin-top:12px"><b>Prompt used:</b> ${esc(I.pr)}</div><div class="acts" style="margin-bottom:8px"><button data-act="cpp">Copy prompt</button></div><div class="ig">${I.urls.map((u,i)=>`<div><img src="${u}" loading="lazy" alt="Generated image ${i+1}" onerror="this.outerHTML='<div class=note>This image could not load. The free image service may be busy. Try Create again.</div>'"><div class="acts"><button data-dl="${i}">Download</button><button data-op="${i}">Open</button></div></div>`).join("")}</div>`}
+function imgv(el){const I=imgState;
+el.innerHTML=`<h2>Image Studio</h2><div class="mu">Create, enhance and understand images.</div>
+<div class="note">Images are made by a free third-party service (Pollinations). It can be slow or unavailable, and NOVA can’t control what it returns. Don’t include private details in prompts or photos.</div>
+<div class="chips"><button class="chip ${I.mode==="create"?"on":""}" data-im="create">Create</button><button class="chip ${I.mode==="analyze"?"on":""}" data-im="analyze">Analyze a photo</button></div>
+${I.mode==="create"?`<textarea id="ip" rows="3" placeholder="Describe the image you want…" aria-label="Image idea">${esc(I.idea||"")}</textarea>
+<div class="chips">${Object.keys(STY).map(k=>`<button class="chip ${I.style===k?"on":""}" data-sty="${k}">${k}</button>`).join("")}</div>
+<div class="chips">${Object.keys(AR).map(k=>`<button class="chip ${I.ar===k?"on":""}" data-ar="${k}">${k}</button>`).join("")}<button class="chip ${I.enh?"on":""}" data-enh="1">✦ Enhance with NOVA</button></div>
+<div class="row"><button class="pri" data-act="mk">Create 4 images</button>${micBtn("ip")}</div><div id="iout">${I.urls.length?imgGrid():""}</div>`
+:`<input type="file" id="if" accept="image/*" aria-label="Choose a photo"><div id="ipv" style="margin:10px 0"></div><textarea id="iq" rows="2" aria-label="Question about the photo">Describe this image in detail.</textarea><div class="row" style="margin-top:10px"><button class="pri" data-act="ana">Analyze</button>${micBtn("iq")}</div><div id="iout"></div>`}`}
+async function mkImg(){const idea=$("#ip").value.trim();if(!idea||busy)return;const I=imgState;I.idea=idea;busy=true;const out=$("#iout");out.innerHTML='<div class="note">Creating your images…</div>';
+let pr=idea+", "+STY[I.style];
+if(I.enh){try{const r=await ask([{role:"user",content:"Idea: "+idea+"\nStyle: "+I.style+" ("+STY[I.style]+")\nWrite one vivid image-generation prompt of at most 70 words covering subject, setting, lighting, composition, mood, colors and medium. Return only the prompt."}],"You write excellent image prompts. Return only the prompt text.",()=>{},undefined,["Return only the prompt.",200]);if(r&&r.text)pr=r.text.trim().replace(/^["']|["']$/g,"")}catch(e){}}
+I.pr=pr;const[w,h]=AR[I.ar],b=Math.floor(Math.random()*1e6);I.urls=[0,1,2,3].map(i=>"https://image.pollinations.ai/prompt/"+encodeURIComponent(pr.slice(0,700))+"?width="+w+"&height="+h+"&seed="+(b+i)+"&nologo=true");
+busy=false;if(view==="image"&&$("#iout"))$("#iout").innerHTML=imgGrid()}
+const anaH=t=>`<div class="out">${md(t)}<div class="acts"><button data-act="cpa">Copy</button>${TTS?`<button data-act="say">🔊 Listen</button>`:""}</div></div>`;
+async function analyze(f){if(busy)return;busy=true;const out=$("#iout");out.innerHTML='<div class="out"><span class="dots"><span></span><span></span><span></span></span></div>';
+try{const img=await shrink(f),q=$("#iq").value.trim()||"Describe this image in detail.";ctrl=new AbortController();let txt="";
+const r=await ask([{role:"user",content:q,img}],SYS,({text})=>{txt=text;out.innerHTML=anaH(text)},ctrl.signal,["Be accurate and clear. Do not identify real people from their faces. Moderate length.",700]);txt=(r&&r.text)||txt;out.innerHTML=anaH(txt);outs.image=txt}
+catch(e){out.innerHTML=`<div class="err">${errMsg(e)}</div>`}busy=false}
+function dlImg(i){const u=imgState.urls[i];fetch(u).then(r=>r.blob()).then(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="nova-image-"+(i+1)+".jpg";a.click()}).catch(()=>window.open(u,"_blank"))}
+function side(){$("#side").innerHTML=`<div class="brand" style="padding:6px 8px 14px"><svg><use href="#logo"/></svg><div>NOVA<small>by MUSTAFA</small></div></div>
+<button class="pri" data-act="newchat" style="margin-bottom:8px">＋ New Chat</button>`+NAV.map(n=>`<button class="nav ${view===n[0]?"on":""}" data-go="${n[0]}"><span>${n[1]}</span><span>${n[2]}</span></button>`).join("")+
+`<div class="mu" style="font-size:12px;margin:14px 8px 4px">Recent</div>`+S.convs.slice(0,6).map(c=>`<button class="nav" data-conv="${c.id}"><span></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.title)}</span></button>`).join("")}
+function go(v){stopVoice();view=v;$("#side").classList.remove("open");render()}
+function render(){side();const el=$("#inner");({home,chat,tasks,saved,settings,image:imgv}[view]||tool)(el);$("#body").scrollTop=0}
+function home(el){const hr=new Date().getHours(),gr=hr<5?"Good night":hr<12?"Good morning":hr<18?"Good afternoon":"Good evening";const sug=["Explain quantum computing simply","Plan a productive week","Write a friendly follow-up email","Help me learn Spanish basics"];
+el.innerHTML=`<div style="text-align:center;padding:10px 0 18px"><svg style="width:54px;height:54px"><use href="#logo"/></svg><h2>${gr+(S.name?", "+esc(S.name):"")+"."}</h2><div class="mu">What can we explore today?</div></div>
+<div class="row"><textarea id="hq" rows="2" style="min-height:56px" placeholder="Ask NOVA anything…" aria-label="Ask NOVA anything"></textarea>${micBtn("hq")}<button class="pri" data-act="hask">Ask</button></div>
+<div class="grid" style="margin:18px 0">${[["chat","AI Chat"],["write","Write Anything"],["research","Research"],["create","Creative Studio"],["image","Image Studio"],["study","Study Assistant"],["tasks","Productivity"],["code","Coding Assistant"],["tasks","My Workspace"]].map(x=>`<button data-go="${x[0]}">${x[1]}</button>`).join("")}</div>
+<h4>Suggested prompts</h4><div class="chips">${sug.map(p=>`<button class="chip" data-sug="${esc(p)}">${esc(p)}</button>`).join("")}</div>
+<h4>Recent conversations</h4>${S.convs.slice(0,4).map(c=>`<button class="nav" data-conv="${c.id}" style="border:1px solid var(--bd);margin-bottom:6px"><span></span><span>${esc(c.title)}</span></button>`).join("")||'<div class="mu">No conversations yet.</div>'}`}
+function chat(el){const c=S.convs.find(x=>x.id===cur);
+el.innerHTML=`<div class="row" style="justify-content:space-between;align-items:center"><h2 style="flex:1;overflow:hidden;text-overflow:ellipsis">${c?esc(c.title):"AI Chat"}</h2>${c?`<button data-act="ren">Rename</button><button data-act="del">Delete</button>`:""}</div>
+${c?`<div class="mu" style="font-size:12px">${new Date(c.ts).toLocaleString()}</div>`:`<div class="note">Start a conversation below. Your chats are saved in this browser.</div><div class="chips">${["Explain something simply","Help me write an email","Make me a study plan"].map(p=>`<button class="chip" data-sug="${esc(p)}">${esc(p)}</button>`).join("")}</div>`}
+<div class="chips">${Object.entries(PERS).map(([k,v])=>`<button class="chip ${(S.persona||"balanced")===k?"on":""}" data-per="${k}">${v[0]}</button>`).join("")}</div>
+<div id="msgs">${c?c.msgs.map(msgH).join(""):""}</div><div id="cerr"></div>
+<div class="row" style="position:sticky;bottom:0;background:var(--bg);padding:10px 0"><textarea id="ci" rows="2" style="min-height:52px" placeholder="Message NOVA…" aria-label="Message"></textarea>${micBtn("ci")}<button class="pri" id="sendb" data-act="send">Send</button></div>`}
+const msgH=(m,i)=>`<div class="msg ${m.role}" data-i="${i}">${m.role==="user"?esc(m.content).replace(/\n/g,"<br>"):(m.content?md(m.content):'<span class="dots"><span></span><span></span><span></span></span>')}${m.role==="assistant"&&m.content?`<div class="acts"><button data-act="cpm">Copy</button><button data-act="regen">Regenerate</button>${TTS?`<button data-act="say">🔊 Listen</button>`:""}${(()=>{const c=S.convs.find(x=>x.id===cur);return c&&i===c.msgs.length-1?`<button data-fu="Explain that more simply, in short sentences.">Simpler</button><button data-fu="Go deeper, in detail, with examples.">Deeper</button>`:""})()}</div>`:""}</div>`;
+async function send(text){if(busy||!text.trim())return;let c=S.convs.find(x=>x.id===cur);
+if(!c){c={id:uid(),title:text.trim().slice(0,40),ts:Date.now(),msgs:[]};S.convs.unshift(c);cur=c.id}
+c.msgs.push({role:"user",content:text.trim()});await reply(c)}
+async function reply(c){busy=true;ctrl=new AbortController();c.msgs.push({role:"assistant",content:""});view="chat";render();$("#body").scrollTop=$("#body").scrollHeight;
+const sb=$("#sendb");sb.textContent="Stop";sb.dataset.act="stop";const hist=c.msgs.slice(0,-1).slice(-9);const last=c.msgs[c.msgs.length-1];
+try{const r=await ask(hist,sysP(),({text})=>{last.content=text;const n=$("#msgs").lastElementChild;if(n){n.innerHTML=md(text);$("#body").scrollTop=$("#body").scrollHeight}},ctrl.signal,lim(hist[hist.length-1].content));last.content=(r&&r.text)||last.content}
+catch(e){if(e&&e.code==="aborted"||ctrl.signal.aborted){}else{$("#cerr")&&($("#cerr").innerHTML=`<div class="err">${errMsg(e)}</div>`);if(!last.content)c.msgs.pop()}}
+if(!last.content&&c.msgs[c.msgs.length-1]===last)c.msgs.pop();busy=false;c.ts=Date.now();save();const err=$("#cerr")?$("#cerr").innerHTML:"";side();const m=$("#msgs");if(m){m.innerHTML=c.msgs.map(msgH).join("");$("#cerr").innerHTML=err;$("#body").scrollTop=$("#body").scrollHeight;const b=$("#sendb");b.textContent="Send";b.dataset.act="send"}}
+function tool(el){const T=TOOLS[view];if(!T){return home(el)}const sel=task[view]=task[view]||T.o[0];
+el.innerHTML=`<h2>${T.t}</h2><div class="mu">${T.s}</div>${T.note?`<div class="note">${T.note}</div>`:""}
+<div class="chips">${T.o.map(o=>`<button class="chip ${o===sel?"on":""}" data-task="${esc(o)}">${esc(o)}</button>`).join("")}</div>
+<textarea id="ti" rows="6" placeholder="${T.ph}" aria-label="Input"></textarea>
+<div class="row" style="margin-top:10px"><button class="pri" id="gen" data-act="gen">Generate</button><button data-act="clr">Clear</button>${micBtn("ti")}</div><div id="tout">${outs[view]?outH(outs[view]):""}</div>`}
+const outH=t=>`<div class="out"><div id="otxt">${md(t)}</div><div class="acts"><button data-act="cpo">Copy</button><button data-act="sv">Save</button>${TTS?`<button data-act="say">🔊 Listen</button>`:""}</div></div>`;
+async function gen(){const inp=$("#ti").value.trim();if(!inp||busy)return;busy=true;ctrl=new AbortController();const v=view,b=$("#gen");b.textContent="Stop";b.dataset.act="stop";
+$("#tout").innerHTML=`<div class="out"><span class="dots"><span></span><span></span><span></span></span></div>`;let txt="";
+const p=`Task: ${task[v]}. Area: ${TOOLS[v].t}.${v==="research"?" Give headings, a short summary and key findings. Clearly separate well-established facts from uncertain points. Do not cite sources.":""}\n\nInput:\n${inp}`;
+try{const r=await ask([{role:"user",content:p}],SYS,({text})=>{txt=text;if(view===v&&$("#tout"))$("#tout").innerHTML=outH(text)},ctrl.signal,lim(inp,true));txt=(r&&r.text)||txt;outs[v]=txt}
+catch(e){if(!ctrl.signal.aborted&&$("#tout"))$("#tout").innerHTML=`<div class="err">${errMsg(e)}</div>`;else if(txt)outs[v]=txt}
+busy=false;if(view===v&&$("#gen")){$("#gen").textContent="Generate";$("#gen").dataset.act="gen";if(outs[v]&&!$("#tout .err"))$("#tout").innerHTML=outH(outs[v])}}
+function tasks(el){el.innerHTML=`<h2>Productivity</h2><div class="mu">Your private workspace, stored in this browser. NOVA can’t access calendars or email.</div>
+<h4>Tasks</h4><div class="row"><input id="nt" placeholder="Add a task…" aria-label="New task"><button class="pri" data-act="addt">Add</button></div>
+${S.tasks.map(t=>`<div class="item"><input type="checkbox" style="width:auto" ${t.d?"checked":""} data-tg="${t.id}" aria-label="Done"><span class="t ${t.d?"done":""}">${esc(t.x)}</span><button data-et="${t.id}">Edit</button><button data-dt="${t.id}">✕</button></div>`).join("")||'<div class="mu" style="margin-top:8px">No tasks yet.</div>'}
+<h4>Notes</h4><textarea id="nn" rows="3" placeholder="Write a note…" aria-label="New note"></textarea><button class="pri" data-act="addn" style="margin-top:8px">Save note</button>
+${S.notes.map(n=>`<div class="item"><span class="t">${esc(n.x).replace(/\n/g,"<br>")}</span><button data-en="${n.id}">Edit</button><button data-dn="${n.id}">✕</button></div>`).join("")}`}
+function saved(el){el.innerHTML=`<h2>Saved Items</h2>${S.saved.map(s=>`<div class="out"><div class="mu" style="font-size:12px">${esc(s.k)} · ${new Date(s.ts).toLocaleDateString()}</div>${md(s.x)}<div class="acts"><button data-cps="${s.id}">Copy</button><button data-ds="${s.id}">Delete</button></div></div>`).join("")||'<div class="note">Nothing saved yet. Use Save on any result.</div>'}`}
+function settings(el){el.innerHTML=`<h2>Settings</h2><h4>Appearance</h4><div class="chips"><button class="chip ${S.theme==="dark"?"on":""}" data-th="dark">Dark</button><button class="chip ${S.theme==="light"?"on":""}" data-th="light">Light</button></div>
+<div class="chips">${[["emerald","Emerald and Gold"],["navy","Navy and Gold"],["burgundy","Burgundy"],["purple","Classic Purple"]].map(p=>`<button class="chip ${(S.pal||"emerald")===p[0]?"on":""}" data-pal="${p[0]}">${p[1]}</button>`).join("")}</div>
+<h4>Profile</h4><input id="nm" value="${esc(S.name)}" placeholder="Your name (optional)" aria-label="Your name"><button data-act="svn" style="margin-top:8px">Save name</button>
+<h4>Privacy</h4><div class="note">There are no accounts. Chats, tasks, notes and saved items stay in this browser only. NOVA has no memory between chats beyond the conversation you’re in. AI requests are sent to the AI provider (NOVA’s shared Gemini, or your own key). Photos you analyze are sent to the AI provider, and image prompts are sent to a free image service (Pollinations).</div>
+<h4>AI connection</h4><div class="chips"><button class="chip ${S.prov==="gemini"?"on":""}" data-prov="gemini">Gemini (free key)</button><button class="chip ${S.prov!=="gemini"?"on":""}" data-prov="anthropic">Anthropic</button></div><div class="note">NOVA’s AI works without a key. Optional: paste your own API key to use your own limits. Get a free Gemini key at aistudio.google.com, or an Anthropic key at console.anthropic.com. Your key stays in this browser and is sent only to that provider. Never share your key.</div><input id="ky" type="password" value="${esc(S.key||"")}" placeholder="${S.prov==="gemini"?"AIza…":"sk-ant-…"}" aria-label="API key"><button data-act="svk" style="margin:8px 8px 0 0">Save key</button><button data-act="chk">Check AI</button> <span id="aist" class="mu"></span>
+<h4>Share NOVA</h4><div class="note">Send this app to a friend. Tip: in Chrome tap ⋮ → Add to Home screen to open NOVA like an app.</div><button data-act="shr">Copy NOVA link</button>
+<h4>Data</h4><button data-act="wipe" style="border-color:#f87171">Delete all my data</button>
+<h4>About NOVA</h4><div class="card"><div class="brand"><svg style="width:36px;height:36px"><use href="#logo"/></svg><div>NOVA<small>Created by MUSTAFA</small></div></div><p style="margin-top:10px"><i>“One Intelligence. Endless Possibilities.”</i></p></div>`}
+document.addEventListener("click",async e=>{const t=e.target.closest("button,.nav"),d=t&&t.dataset;if(!t)return;
+if(d.mic){mic(d.mic,t);return}
+if(d.per){S.persona=d.per;save();return chat($("#inner"))}if(d.fu){send(d.fu);return}
+if(d.im||d.sty||d.ar||d.enh){const x=$("#ip");if(x)imgState.idea=x.value;if(d.im)imgState.mode=d.im;if(d.sty)imgState.style=d.sty;if(d.ar)imgState.ar=d.ar;if(d.enh)imgState.enh=!imgState.enh;return imgv($("#inner"))}
+if(d.dl!==undefined){dlImg(+d.dl);return}if(d.op!==undefined){window.open(imgState.urls[+d.op],"_blank");return}if(d.pal){S.pal=d.pal;document.documentElement.dataset.pal=d.pal;save();return settings($("#inner"))}if(d.prov){S.prov=d.prov;save();return settings($("#inner"))}if(d.go)return go(d.go);if(d.conv){cur=d.conv;return go("chat")}
+if(d.sug){await send(d.sug);return}if(d.task){task[view]=d.task;return tool($("#inner"))}
+if(d.th){S.theme=d.th;document.documentElement.dataset.theme=d.th;save();return settings($("#inner"))}
+if(d.tg){const x=S.tasks.find(i=>i.id===d.tg);x.d=!x.d;save();return tasks($("#inner"))}
+if(d.dt){S.tasks=S.tasks.filter(i=>i.id!==d.dt);save();return tasks($("#inner"))}
+if(d.et){const x=S.tasks.find(i=>i.id===d.et),v=prompt("Edit task",x.x);if(v&&v.trim()){x.x=v.trim();save();tasks($("#inner"))}return}
+if(d.dn){S.notes=S.notes.filter(i=>i.id!==d.dn);save();return tasks($("#inner"))}
+if(d.en){const x=S.notes.find(i=>i.id===d.en),v=prompt("Edit note",x.x);if(v&&v.trim()){x.x=v.trim();save();tasks($("#inner"))}return}
+if(d.ds){S.saved=S.saved.filter(i=>i.id!==d.ds);save();return saved($("#inner"))}
+if(d.cps){copy(S.saved.find(i=>i.id===d.cps).x);return}
+switch(d.act){
+case"enter":location.hash="app";break;case"disc":$("#feat").scrollIntoView({behavior:"smooth"});break;
+case"menu":$("#side").classList.toggle("open");break;case"newchat":cur=null;go("chat");break;
+case"hask":{const v=$("#hq").value;if(v.trim())send(v);else $("#hq").focus();break}
+case"send":{const i=$("#ci"),v=i.value;i.value="";send(v);break}
+case"stop":ctrl&&ctrl.abort();break;
+case"cp":copy(t.parentElement.querySelector("code").textContent);t.textContent="Copied";setTimeout(()=>t.textContent="Copy",1200);break;
+case"cpm":copy(S.convs.find(x=>x.id===cur).msgs[+t.closest(".msg").dataset.i].content);break;
+case"regen":{const c=S.convs.find(x=>x.id===cur);if(!busy&&c.msgs[c.msgs.length-1].role==="assistant"){c.msgs.pop();reply(c)}break}
+case"ren":{const c=S.convs.find(x=>x.id===cur),v=prompt("Rename conversation",c.title);if(v&&v.trim()){c.title=v.trim().slice(0,80);save();render()}break}
+case"del":if(confirm("Delete this conversation?")){S.convs=S.convs.filter(x=>x.id!==cur);cur=null;save();go("chat")}break;
+case"gen":gen();break;case"clr":$("#ti").value="";outs[view]="";$("#tout").innerHTML="";break;
+case"cpo":copy(outs[view]);break;
+case"mk":mkImg();break;case"ana":{const f=$("#if").files[0];if(!f)alert("Choose a photo first.");else analyze(f);break}case"cpp":copy(imgState.pr);break;case"cpa":copy(outs.image);break;
+case"say":{const m=t.closest(".msg");speak(m?S.convs.find(x=>x.id===cur).msgs[+m.dataset.i].content:outs[view],t);break}
+case"sv":S.saved.unshift({id:uid(),k:TOOLS[view].t+" · "+task[view],x:outs[view],ts:Date.now()});save();t.textContent="Saved ✓";break;
+case"addt":{const i=$("#nt");if(i.value.trim()){S.tasks.unshift({id:uid(),x:i.value.trim(),d:false});save();tasks($("#inner"))}break}
+case"addn":{const i=$("#nn");if(i.value.trim()){S.notes.unshift({id:uid(),x:i.value.trim()});save();tasks($("#inner"))}break}
+case"svn":S.name=$("#nm").value.trim().slice(0,40);save();t.textContent="Saved ✓";break;
+case"svk":S.key=$("#ky").value.trim();save();t.textContent="Saved ✓";break;
+case"chk":{const s=$("#aist");s.textContent="Testing…";try{await ask([{role:"user",content:"Reply with OK"}],"Reply with one word.",()=>{},undefined,["Reply with one word.",20]);s.textContent=S.key?"Key works ✓":"Shared NOVA AI works ✓"}catch(x){s.textContent=errMsg(x).replace(/<[^>]*>/g,"")}break}
+case"shr":copy(location.origin+location.pathname);t.textContent="Link copied ✓";break;
+case"wipe":if(confirm("Delete all chats, tasks, notes and saved items from this browser? This can’t be undone.")){S={convs:[],tasks:[],notes:[],saved:[],theme:S.theme,name:""};cur=null;save();render()}break}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&e.target.id==="ci"&&matchMedia("(hover:hover)").matches){e.preventDefault();const v=e.target.value;e.target.value="";send(v)}
+if(e.key==="Enter"&&e.target.id==="nt")$("#nt").nextElementSibling.click()});
+document.addEventListener("change",e=>{if(e.target.id==="if"){const f=e.target.files[0];$("#ipv").innerHTML=f?`<img src="${URL.createObjectURL(f)}" alt="Your photo" style="max-width:100%;border-radius:12px">`:""}});
+function route(){const a=location.hash==="#app";$("#land").classList.toggle("hide",a);$("#app").classList.toggle("hide",!a);if(a)render()}
+document.documentElement.dataset.theme=S.theme;document.documentElement.dataset.pal=S.pal||"emerald";addEventListener("hashchange",route);route();
+</script></body></html>
